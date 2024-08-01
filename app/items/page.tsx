@@ -2,6 +2,8 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import ItemCard from '../ItemCard'
+import FilterListIcon from '@mui/icons-material/FilterList';
+import SearchIcon from '@mui/icons-material/Search';
 import { ListItem, Stack, Box, Button, Typography, Modal, TextField } from '@mui/material'
 import { firestore } from '../../firebase'
 import {
@@ -92,44 +94,52 @@ const Items = () => {
 
     return (
         <Box
-            width="100vw"
-            height="100vh"
-            display={'flex'}
-            justifyContent={'center'}
-            flexDirection={'column'}
-            alignItems={'center'}
-            gap={2}>
-            <Button variant="contained" onClick={handleOpen}>Add Item</Button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box
-                    sx={style}>
-                    <TextField
-                        variant="outlined"
-                        fullWidth
-                        value={itemName}
-                        onChange={(e) => {
-                            setItemName(e.target.value)
-                        }} />
+            padding={4}
+        >
+            <Box
 
-                    <Button
-                        variant="outlined"
-                        onClick={() => {
-                            addItem(itemName);
-                            setItemName('');
-                            handleClose();
-                        }}>
-                        Add
-                    </Button>
-                </Box>
-            </Modal>
+                display={'flex'}
+                justifyContent={'end'}
+                alignItems={'center'}
+                gap={4}
+                marginBottom={3}
+                paddingBottom={1}
+                borderBottom="1px solid #333"
+            >
+                <Button variant="outlined"><FilterListIcon /></Button>
+                <Button variant="outlined"><SearchIcon /></Button>
+                <Button variant="contained" onClick={handleOpen}>Add Item</Button>
+                <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box
+                        sx={style}>
+                        <TextField
+                            variant="outlined"
+                            fullWidth
+                            value={itemName}
+                            onChange={(e) => {
+                                setItemName(e.target.value)
+                            }} />
+
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                addItem(itemName);
+                                setItemName('');
+                                handleClose();
+                            }}>
+                            Add
+                        </Button>
+                    </Box>
+                </Modal>
+            </Box>
             <Box border={'1px solid #333'}>
                 <Box
-                    width="800px"
+                    width="100%"
                     height="100px"
                     bgcolor={'#ADD8E6'}
                     display={'flex'}
@@ -140,27 +150,34 @@ const Items = () => {
                         Inventory Items
                     </Typography>
                 </Box>
-                <Stack width="800px" height="300px" spacing={2} overflow={'auto'}>
+                <Stack width="100%" height="300px" spacing={2} overflow={'auto'}>
                     {inventory.map(({ name, quantity }) => (
-                        <Box
-                            key={name}
-                            width="100%"
-                            minHeight="150px"
-                            display={'flex'}
-                            justifyContent={'space-between'}
-                            alignItems={'center'}
-                            bgcolor={'#f0f0f0'}
-                            paddingX={5}
-                        >
-                            <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
-                                {name.charAt(0).toUpperCase() + name.slice(1)}
-                            </Typography>
-                            <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
-                                Quantity: {quantity}
-                            </Typography>
-                            <Button variant="contained" onClick={() => removeItem(name)}>
-                                Remove
-                            </Button>
+                        // <Box
+                        //     key={name}
+                        //     width="100%"
+                        //     minHeight="150px"
+                        //     display={'flex'}
+                        //     justifyContent={'space-between'}
+                        //     alignItems={'center'}
+                        //     bgcolor={'#f0f0f0'}
+                        //     paddingX={5}
+                        // >
+                        //     <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
+                        //         {name.charAt(0).toUpperCase() + name.slice(1)}
+                        //     </Typography>
+                        //     <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
+                        //         Quantity: {quantity}
+                        //     </Typography>
+                        //     <Button variant="contained" onClick={() => removeItem(name)}>
+                        //         Remove
+                        //     </Button>
+                        // </Box>
+                        <Box key={name}>
+                            <ItemCard
+                                name={name}
+                                quantity={quantity}
+                                removeItem={() => removeItem(name)}
+                            />
                         </Box>
                     ))}
                 </Stack>
@@ -170,3 +187,12 @@ const Items = () => {
 } // Close the Items component here
 
 export default Items
+
+
+// width = "100vw"
+// height = "100vh"
+// display = { 'flex'}
+// justifyContent = { 'center'}
+// flexDirection = { 'column'}
+// alignItems = { 'center'}
+// gap = { 2}

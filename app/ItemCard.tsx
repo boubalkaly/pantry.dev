@@ -9,32 +9,32 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import UpdateIcon from '@mui/icons-material/Update';
-
+import UpdateButton from './items/UpdateButton';
 interface ItemCardProps {
     name: string;
-    description?: string;
-    quantity: string;
-    increment?: (itemName: any) => void;
-    decrement?: (itemname: any) => void;
+    description: string;
+    quantity: number;
+    increment: (itemName: any) => void;
+    decrement: (itemname: any) => void;
     removeItem: (itemName: any) => void;
-    updateItem?: (itemName: any) => void;
+
 }
 
 
-const ItemCard = ({ name, description, quantity, increment, decrement, removeItem, updateItem }: ItemCardProps) => {
+const ItemCard = ({ name, description, quantity, increment, decrement, removeItem }: ItemCardProps) => {
     return (
         <Card sx={{ maxWidth: 300, minWidth: 150 }}>
-            {/* <CardMedia
-                sx={{ height: 150 }}
-                image="/static/images/cards/contemplative-reptile.jpg"
-                title="green iguana"
-            /> */}
             <CardContent>
                 <Typography gutterBottom variant="h4" component="div">
                     {name}
                 </Typography>
                 <Button size="small" onClick={() => removeItem(name)}><DeleteIcon /></Button>
-                <Button size="small" onClick={() => updateItem?.(name)}><UpdateIcon /></Button>
+                <UpdateButton
+                    name={name}
+                    quantity={quantity}
+                    description={description}
+
+                />
                 <Typography variant="body2" color="text.secondary">
                     {description}
                 </Typography>

@@ -15,17 +15,21 @@ import {
     deleteDoc,
     getDoc,
 } from 'firebase/firestore'
+
+
 const Items = () => {
+
+    const [inventory, setInventory] = useState<InventoryItem[]>([]);
+    const [open, setOpen] = useState(false);
+    const [itemName, setItemName] = useState('');
+    const [itemQuantity, setItemQuantity] = useState(0);
+    const [itemDescription, setItemDescription] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     interface InventoryItem {
         name: string;
         [key: string]: any;
     }
-
-    const [inventory, setInventory] = useState<InventoryItem[]>([]);
-    const [open, setOpen] = useState(false);
-    const [itemName, setItemName] = useState('')
-
 
     const updateInventory = async () => { //basically to render our current inventory whenever our page loads
         const snapshot = query(collection(firestore, 'inventory')) //fetch what we curerntly have in our database
@@ -43,32 +47,47 @@ const Items = () => {
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-            const { quantity } = docSnap.data();
-            if (quantity === 1) {
-                await deleteDoc(docRef);
-            } else {
-                await setDoc(docRef, { quantity: quantity - 1 })
-            }
-        }
-        await updateInventory()
-    }
-    const addItem = async (item: any) => {
-        const docRef = doc(collection(firestore, 'inventory'), item)
-        const docSnap = await getDoc(docRef)
-
-        if (docSnap.exists()) { //update the count the doc already exists
-            const { quantity } = docSnap.data();
-            await setDoc(docRef, { quantity: quantity + 1 })
-
-        } else {
-            await setDoc(docRef, { quantity: 1 })
+            await deleteDoc(docRef);
         }
         await updateInventory()
     }
 
+
+    const increment = async (item: any) => {
+        const docRef = doc(collection(firestore, 'inventory'), item);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const { quantity, description } = docSnap.data();
+            await setDoc(docRef, { quantity: quantity + 1, description }, { merge: true })
+        }
+        await updateInventory();
+    }
+
+    const decrement = async (item: any) => {
+        const docRef = doc(collection(firestore, 'inventory'), item);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const { quantity, description } = docSnap.data();
+            await setDoc(docRef, { quantity: quantity - 1, description }, { merge: true });
+        }
+        await updateInventory();
+    }
+    const addItem = async (name: string, quantity: number, description: string) => {
+        const docRef = doc(collection(firestore, 'inventory'), name);
+
+        const data = {
+            quantity: quantity,
+            description: description
+        }
+        await setDoc(docRef, data);
+
+        await updateInventory();
+    }
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+
     const style = {
         position: 'absolute',
         top: '50%',
@@ -86,11 +105,7 @@ const Items = () => {
 
     useEffect(() => {
         updateInventory();
-    }, []) //update only once when the component mounts
-
-
-
-
+    }, [inventory]) //update only once when the component mounts
 
     return (
         <Box
@@ -107,6 +122,13 @@ const Items = () => {
                 borderBottom="1px solid #333"
             >
                 <Button variant="outlined"><FilterListIcon /></Button>
+                <TextField
+                    variant="outlined"
+                    fullWidth
+                    placeholder="Search items..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)} // Update search state
+                />
                 <Button variant="outlined"><SearchIcon /></Button>
                 <Button variant="contained" onClick={handleOpen}>Add Item</Button>
                 <Modal
@@ -117,6 +139,7 @@ const Items = () => {
                 >
                     <Box
                         sx={style}>
+                        <Typography variant="h3">Add name</Typography>
                         <TextField
                             variant="outlined"
                             fullWidth
@@ -124,18 +147,37 @@ const Items = () => {
                             onChange={(e) => {
                                 setItemName(e.target.value)
                             }} />
+                        <Typography variant="h3">Add quantity</Typography>
+                        <TextField
+                            variant="outlined"
+                            fullWidth
+                            value={itemQuantity}
+                            onChange={(e) => {
+                                setItemQuantity(Number(e.target.value))
+                            }} />
+                        <Typography variant="h3">Add description</Typography>
+                        <TextField
+                            variant="outlined"
+                            fullWidth
+                            value={itemDescription}
+                            onChange={(e) => {
+                                setItemDescription(e.target.value)
+                            }} />
 
                         <Button
                             variant="outlined"
                             onClick={() => {
-                                addItem(itemName);
-                                setItemName('');
+                                addItem(itemName, itemQuantity, itemDescription);
+                                setItemName('')
+                                setItemQuantity(0)
+                                setItemDescription('')
                                 handleClose();
                             }}>
                             Add
                         </Button>
                     </Box>
                 </Modal>
+
             </Box>
             <Box border={'1px solid #333'}>
                 <Box
@@ -151,32 +193,16 @@ const Items = () => {
                     </Typography>
                 </Box>
                 <Stack width="100%" height="300px" spacing={2} overflow={'auto'}>
-                    {inventory.map(({ name, quantity }) => (
-                        // <Box
-                        //     key={name}
-                        //     width="100%"
-                        //     minHeight="150px"
-                        //     display={'flex'}
-                        //     justifyContent={'space-between'}
-                        //     alignItems={'center'}
-                        //     bgcolor={'#f0f0f0'}
-                        //     paddingX={5}
-                        // >
-                        //     <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
-                        //         {name.charAt(0).toUpperCase() + name.slice(1)}
-                        //     </Typography>
-                        //     <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
-                        //         Quantity: {quantity}
-                        //     </Typography>
-                        //     <Button variant="contained" onClick={() => removeItem(name)}>
-                        //         Remove
-                        //     </Button>
-                        // </Box>
+                    {inventory.filter(({ name }) => name.toLowerCase().includes(searchQuery.toLowerCase())).map(({ name, quantity, description }) => (
+
                         <Box key={name}>
                             <ItemCard
                                 name={name}
                                 quantity={quantity}
+                                description={description}
                                 removeItem={() => removeItem(name)}
+                                increment={() => increment(name)}
+                                decrement={() => decrement(name)}
                             />
                         </Box>
                     ))}

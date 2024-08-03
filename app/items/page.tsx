@@ -1,7 +1,7 @@
 'use client';
 import React from 'react'
 import { useState, useEffect } from 'react'
-import ItemCard from '../ItemCard'
+import ItemCard from './components/ItemCard'
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { ListItem, Stack, Box, Button, Typography, Modal, TextField } from '@mui/material'
@@ -15,15 +15,14 @@ import {
     deleteDoc,
     getDoc,
 } from 'firebase/firestore'
-
+import CameraComponent from './components/Camera.js'
+import AddButton from './components/AddButton';
 
 const Items = () => {
 
     const [inventory, setInventory] = useState<InventoryItem[]>([]);
     const [open, setOpen] = useState(false);
-    const [itemName, setItemName] = useState('');
-    const [itemQuantity, setItemQuantity] = useState(0);
-    const [itemDescription, setItemDescription] = useState('');
+
     const [searchQuery, setSearchQuery] = useState('');
 
     interface InventoryItem {
@@ -32,14 +31,15 @@ const Items = () => {
     }
 
     const updateInventory = async () => { //basically to render our current inventory whenever our page loads
+        console.log("Fetching inventory...");
         const snapshot = query(collection(firestore, 'inventory')) //fetch what we curerntly have in our database
         const docs = await getDocs(snapshot) //given the inventory, retrieve all the docs
         const inventoryList: InventoryItem[] = [];
         docs.forEach(doc => {
             inventoryList.push({ name: doc.id, ...doc.data() })
         })
+        console.log("Inventory fetched:", inventoryList);
         setInventory(inventoryList);
-        console.log(inventory);
     }
 
     const removeItem = async (item: any) => {
@@ -105,7 +105,7 @@ const Items = () => {
 
     useEffect(() => {
         updateInventory();
-    }, [inventory]) //update only once when the component mounts
+    }, [inventory]); // Update to run only once on mount
 
     return (
         <Box
@@ -130,54 +130,7 @@ const Items = () => {
                     onChange={(e) => setSearchQuery(e.target.value)} // Update search state
                 />
                 <Button variant="outlined"><SearchIcon /></Button>
-                <Button variant="contained" onClick={handleOpen}>Add Item</Button>
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box
-                        sx={style}>
-                        <Typography variant="h3">Add name</Typography>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            value={itemName}
-                            onChange={(e) => {
-                                setItemName(e.target.value)
-                            }} />
-                        <Typography variant="h3">Add quantity</Typography>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            value={itemQuantity}
-                            onChange={(e) => {
-                                setItemQuantity(Number(e.target.value))
-                            }} />
-                        <Typography variant="h3">Add description</Typography>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            value={itemDescription}
-                            onChange={(e) => {
-                                setItemDescription(e.target.value)
-                            }} />
-
-                        <Button
-                            variant="outlined"
-                            onClick={() => {
-                                addItem(itemName, itemQuantity, itemDescription);
-                                setItemName('')
-                                setItemQuantity(0)
-                                setItemDescription('')
-                                handleClose();
-                            }}>
-                            Add
-                        </Button>
-                    </Box>
-                </Modal>
-
+                <AddButton />
             </Box>
             <Box border={'1px solid #333'}>
                 <Box

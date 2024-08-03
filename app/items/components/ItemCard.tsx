@@ -9,7 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import UpdateIcon from '@mui/icons-material/Update';
-import UpdateButton from './items/UpdateButton';
+import UpdateButton from './UpdateButton';
 interface ItemCardProps {
     name: string;
     description: string;
@@ -31,9 +31,6 @@ const ItemCard = ({ name, description, quantity, increment, decrement, removeIte
                 <Button size="small" onClick={() => removeItem(name)}><DeleteIcon /></Button>
                 <UpdateButton
                     name={name}
-                    quantity={quantity}
-                    description={description}
-
                 />
                 <Typography variant="body2" color="text.secondary">
                     {description}

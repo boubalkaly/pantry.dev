@@ -1,10 +1,10 @@
-'use client';
+'use client'
 import React from 'react'
 import { useState, useEffect } from 'react'
 import ItemCard from './components/ItemCard'
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
-import { ListItem, Stack, Box, Button, Typography, Modal, TextField } from '@mui/material'
+import { ListItem, Stack, Box, Button, Typography, Modal, TextField, Grid } from '@mui/material'
 import { firestore } from '../../firebase'
 import {
     collection,
@@ -105,7 +105,7 @@ const Items = () => {
 
     useEffect(() => {
         updateInventory();
-    }, [inventory]); // Update to run only once on mount
+    }, []); // Update to run only once on mount
 
     return (
         <Box
@@ -121,7 +121,7 @@ const Items = () => {
                 paddingBottom={1}
                 borderBottom="1px solid #333"
             >
-                <Button variant="outlined"><FilterListIcon /></Button>
+                {/* <Button variant="outlined"><FilterListIcon /></Button> */}
                 <TextField
                     variant="outlined"
                     fullWidth
@@ -129,7 +129,7 @@ const Items = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)} // Update search state
                 />
-                <Button variant="outlined"><SearchIcon /></Button>
+                <CameraComponent />
                 <AddButton />
             </Box>
             <Box border={'1px solid #333'}>
@@ -141,14 +141,14 @@ const Items = () => {
                     justifyContent={'center'}
                     alignItems={'center'}
                 >
-                    <Typography variant={'h2'} color={'#333'} textAlign={'center'}>
+                    <Typography variant={'h4'} color={'#333'} textAlign={'center'}>
                         Inventory Items
                     </Typography>
                 </Box>
-                <Stack width="100%" height="300px" spacing={2} overflow={'auto'}>
+                <Stack component="div" width="100%" height="300px" spacing={2} overflow={'auto'}>
                     {inventory.filter(({ name }) => name.toLowerCase().includes(searchQuery.toLowerCase())).map(({ name, quantity, description }) => (
 
-                        <Box key={name}>
+                        <Box key={name} bgcolor='gray'>
                             <ItemCard
                                 name={name}
                                 quantity={quantity}

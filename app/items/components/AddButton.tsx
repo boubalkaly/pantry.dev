@@ -20,7 +20,16 @@ const AddButton = () => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 400,
+        width: {
+            sm: 300,
+            md: 250,
+            lg: 400,
+        },
+        height: {
+            sm: 300,
+            md: 250,
+            lg: 400,
+        },
         bgcolor: 'white',
         border: '2px solid #000',
         boxShadow: 24,
@@ -48,7 +57,7 @@ const AddButton = () => {
 
     return (
         <Box>
-            <Button variant="outlined" onClick={handleOpen}>Add Item</Button>
+            <Button variant="contained" size="small" onClick={handleOpen}>Add Item</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -57,7 +66,7 @@ const AddButton = () => {
             >
                 <Box
                     sx={style}>
-                    <Typography variant="h3">Update name</Typography>
+                    <Typography sx={{ fontSize: '0.5rem' }}>Update name</Typography>
                     <TextField
                         variant="outlined"
                         fullWidth
@@ -65,7 +74,7 @@ const AddButton = () => {
                         onChange={(e) => {
                             setItemName(e.target.value)
                         }} />
-                    <Typography variant="h3">Update quantity</Typography>
+                    <Typography sx={{ fontSize: '0.5rem' }}>Update quantity</Typography>
                     <TextField
                         variant="outlined"
                         fullWidth
@@ -73,7 +82,7 @@ const AddButton = () => {
                         onChange={(e) => {
                             setItemQuantity(Number(e.target.value))
                         }} />
-                    <Typography variant="h3">Update description</Typography>
+                    <Typography sx={{ fontSize: '0.5rem' }}>Update description</Typography>
                     <TextField
                         variant="outlined"
                         fullWidth

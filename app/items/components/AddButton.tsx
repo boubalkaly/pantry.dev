@@ -1,7 +1,8 @@
+'use client';
 import React, { useState } from 'react'
 import { Box, Modal, TextField, Button, Typography } from '@mui/material'
 import UpdateIcon from '@mui/icons-material/Update';
-import { firestore } from '../../firebase'
+import { firestore } from '../../../firebase'
 import {
     collection,
     doc,
@@ -11,20 +12,24 @@ import {
     deleteDoc,
     getDoc,
 } from 'firebase/firestore'
-interface UpdateButtonProps {
 
-    name: string;
-    quantity: number;
-    description: string;
-}
 
-const UpdateButton = ({ name, quantity, description }: UpdateButtonProps) => {
+const AddButton = () => {
     const style = {
         position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 400,
+        width: {
+            sm: 300,
+            md: 300,
+            lg: 400,
+        },
+        // height: {
+        //     sm: 300,
+        //     md: 600,
+        //     lg: 700,
+        // },
         bgcolor: 'white',
         border: '2px solid #000',
         boxShadow: 24,
@@ -33,38 +38,37 @@ const UpdateButton = ({ name, quantity, description }: UpdateButtonProps) => {
         flexDirection: 'column',
         gap: 3,
     }
-    const oldName = name;
-    const [itemName, setItemName] = useState(name);
-    const [itemQuantity, setItemQuantity] = useState(quantity);
-    const [itemDescription, setItemDescription] = useState(description);
+
+    const [itemName, setItemName] = useState('');
+    const [itemQuantity, setItemQuantity] = useState(0);
+    const [itemDescription, setItemDescription] = useState('');
     const [open, setOpen] = useState(false)
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const updateItem = async (oldName: string, newName: string, newQuantity: number, newDescription: string) => {
-        const oldDocRef = doc(collection(firestore, 'inventory'), oldName)
-        const newDocRef = doc(collection(firestore, 'inventory'), newName)
-        const docSnap = await getDoc(oldDocRef)
-        if (docSnap.exists()) {
-            await setDoc(newDocRef, {
-                quantity: newQuantity,
-                description: newDescription
-            })
-            await deleteDoc(oldDocRef);
+
+    const createItem = async (name: string, quantity: number, description: string) => {
+        const docRef = doc(collection(firestore, 'inventory'), name);
+        const newData = {
+            quantity: quantity,
+            description: description,
         }
-        // await updateInventory();
+        await setDoc(docRef, newData);
     }
+
     return (
         <Box>
-            <Button variant="outlined" onClick={handleOpen}><UpdateIcon /></Button>
+            <Button variant="contained" size="small" onClick={handleOpen}>Add Item</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+
             >
                 <Box
-                    sx={style}>
-                    <Typography variant="h3">Update name</Typography>
+                    sx={style}
+                    overflow="auto">
+                    <Typography sx={{ fontSize: '1rem' }}>Update name</Typography>
                     <TextField
                         variant="outlined"
                         fullWidth
@@ -72,7 +76,7 @@ const UpdateButton = ({ name, quantity, description }: UpdateButtonProps) => {
                         onChange={(e) => {
                             setItemName(e.target.value)
                         }} />
-                    <Typography variant="h3">Update quantity</Typography>
+                    <Typography sx={{ fontSize: '1rem' }}>Update quantity</Typography>
                     <TextField
                         variant="outlined"
                         fullWidth
@@ -80,7 +84,7 @@ const UpdateButton = ({ name, quantity, description }: UpdateButtonProps) => {
                         onChange={(e) => {
                             setItemQuantity(Number(e.target.value))
                         }} />
-                    <Typography variant="h3">Update description</Typography>
+                    <Typography sx={{ fontSize: '1rem' }}>Update description</Typography>
                     <TextField
                         variant="outlined"
                         fullWidth
@@ -92,10 +96,10 @@ const UpdateButton = ({ name, quantity, description }: UpdateButtonProps) => {
                     <Button
                         variant="outlined"
                         onClick={() => {
-                            updateItem(oldName, itemName, itemQuantity, itemDescription);
-                            setItemName(itemName);
-                            setItemQuantity(itemQuantity);
-                            setItemDescription(itemDescription);
+                            createItem(itemName, itemQuantity, itemDescription);
+                            setItemName('');
+                            setItemQuantity(0);
+                            setItemDescription('');
                             handleClose();
                         }}>
                         Add
@@ -106,6 +110,4 @@ const UpdateButton = ({ name, quantity, description }: UpdateButtonProps) => {
     )
 }
 
-export default UpdateButton
-
-
+export default AddButton

@@ -25,7 +25,7 @@ export async function POST(req: Request, res: Response) {
                     {
                         type: "image_url",
                         image_url: {
-                            url: `data:image/jpeg;base64,${image}`,
+                            url: `${image}`,
                             // url: "https://assets.clevelandclinic.org/transform/LargeFeatureImage/cd71f4bd-81d4-45d8-a450-74df78e4477a/Apples-184940975-770x533-1_jpg",
                             // detail: 'low',
                         }
@@ -37,7 +37,9 @@ export async function POST(req: Request, res: Response) {
         try {
             const content = response.choices[0].message.content
             const responseMessage = `Received prompt: ${content}`
-            return NextResponse.json({ message: responseMessage })
+
+            return NextResponse.json(content)
+
 
         } catch (error) {
             console.error('Error', error);

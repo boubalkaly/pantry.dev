@@ -37,16 +37,16 @@ const UpdateButton = ({ name }: updateButtonProps) => {
 
 
 
-    const [oldName, setOldName] = useState('')
-    const [oldQuantity, setOldQuantity] = useState(0);
-    const [oldDescription, setOldDescription] = useState('');
-    const [itemName, setItemName] = useState(oldName);
-    const [itemQuantity, setItemQuantity] = useState(oldQuantity);
-    const [itemDescription, setItemDescription] = useState(oldDescription);
+    // const [oldName, setOldName] = useState('')
+    // const [oldQuantity, setOldQuantity] = useState(0);
+    // const [oldDescription, setOldDescription] = useState('');
+    const [itemName, setItemName] = useState(name);
+    const [itemQuantity, setItemQuantity] = useState(0);
+    const [itemDescription, setItemDescription] = useState('');
 
     const [open, setOpen] = useState(false)
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleOpen: () => void = () => setOpen(true);
+    const handleClose: () => void = () => setOpen(false);
 
     const fetchCurrentData = async () => {
         const docRef = doc(collection(firestore, 'inventory'), name);
@@ -64,17 +64,16 @@ const UpdateButton = ({ name }: updateButtonProps) => {
 
 
 
-    const updateItem = async (oldName: string, newName: string, newQuantity: number, newDescription: string) => {
-        const oldDocRef = doc(collection(firestore, 'inventory'), oldName)
-        const newDocRef = doc(collection(firestore, 'inventory'), newName)
-        const docSnap = await getDoc(oldDocRef)
-        if (docSnap.exists()) {
-            await setDoc(newDocRef, {
-                quantity: newQuantity,
-                description: newDescription
-            })
-            await deleteDoc(oldDocRef);
+    const updateItem = async (name: string, newQuantity: number, newDescription: string) => {
+        const docRef = doc(collection(firestore, 'inventory'), name)
+        const newData =
+        {
+            quantity: newQuantity,
+            description: newDescription,
         }
+        await setDoc(docRef, newData);
+        fetchCurrentData()
+        console.log(`Data for ${name} updated successfully!`)
         // await updateInventory();
     }
     useEffect(() => {
@@ -86,7 +85,7 @@ const UpdateButton = ({ name }: updateButtonProps) => {
 
     return (
         <Box>
-            <Button variant="outlined" onClick={handleOpen}><UpdateIcon /></Button>
+            <Button variant="outlined" size="small" onClick={handleOpen}><UpdateIcon /></Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -95,14 +94,6 @@ const UpdateButton = ({ name }: updateButtonProps) => {
             >
                 <Box
                     sx={style}>
-                    <Typography variant="h3">Update name</Typography>
-                    <TextField
-                        variant="outlined"
-                        fullWidth
-                        value={itemName}
-                        onChange={(e) => {
-                            setItemName(e.target.value)
-                        }} />
                     <Typography variant="h3">Update quantity</Typography>
                     <TextField
                         variant="outlined"
@@ -123,7 +114,7 @@ const UpdateButton = ({ name }: updateButtonProps) => {
                     <Button
                         variant="outlined"
                         onClick={() => {
-                            updateItem(oldName, itemName, itemQuantity, itemDescription);
+                            updateItem(itemName, itemQuantity, itemDescription);
                             setItemName('');
                             setItemQuantity(0);
                             setItemDescription('');

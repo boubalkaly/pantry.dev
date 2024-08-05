@@ -27,23 +27,28 @@ interface ItemCardProps {
 const ItemCard = ({ name, description, quantity, increment, decrement, removeItem }: ItemCardProps) => {
     return (
         <Card sx={{
-            width: '100%',
-            height: '200px',
-            padding: {
-                sm: 2,
-                md: 3,
-            },
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            alignItems: 'center'
 
         }}>
             <CardContent
                 sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 2,
 
                 }}
             >
-                <Typography gutterBottom variant="h6" component="div">
+
+                <Typography gutterBottom variant="h6" component="div"
+                    sx={{
+                        paddingRight: 20,
+                        backgroundColor: 'gray',
+                        width: '200px',
+
+                    }}>
                     {name}
                 </Typography>
                 <DeleteButton name={name} />

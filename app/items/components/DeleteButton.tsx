@@ -32,7 +32,7 @@ const DeleteButton = ({ name }: updateButtonProps) => {
 
     return (
         <Box>
-            <Button variant="outlined" onClick={() => deleteItem(name)}><DeleteIcon /></Button>
+            <Button variant="outlined" size="small" onClick={() => deleteItem(name)}><DeleteIcon /></Button>
         </Box >
     )
 }

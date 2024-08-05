@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Camera } from "react-camera-pro";
 import { CameraType } from "react-camera-pro";
 import { firestore } from '../../../firebase'
@@ -19,7 +19,9 @@ const CameraComponent = () => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
+    useEffect(() => {
+        console.log(`this is the image format: ${image}`)
+    }, [image])
     const handleSubmit = async () => {
         const response = await fetch('../../api/openai', {
             method: 'POST',
@@ -31,8 +33,27 @@ const CameraComponent = () => {
                 image: image,
             })
         })
-        const data = await response.json()
-        console.log("image data: ", data)
+        if (!response.ok) {
+            console.error('Error:', response.statusText)
+        }
+        try {
+            let data = await response.json()
+            data = JSON.parse(data);
+
+            console.log(`image data: ${data ? data.description : 'no data was parsed'}`)
+
+            const docRef = doc(collection(firestore, 'inventory'), data.name)
+            const newData = {
+                quantity: data.quantity,
+                description: data.description,
+            }
+            await setDoc(docRef, newData);
+            console.log('new item successfully created')
+
+        } catch (error) {
+            console.error('Error parsing the response from OpenAI', error)
+        }
+
     }
     const style = {
         position: 'absolute',

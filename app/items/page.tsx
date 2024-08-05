@@ -105,7 +105,7 @@ const Items = () => {
 
     useEffect(() => {
         updateInventory();
-    }, []); // Update to run only once on mount
+    }, [inventory]); // Update to run only once on mount
 
     return (
         <Box
@@ -145,7 +145,7 @@ const Items = () => {
                         Inventory Items
                     </Typography>
                 </Box>
-                <Stack component="div" width="100%" height="300px" spacing={2} overflow={'auto'}>
+                <Stack component="div" width="100%" height="300px" padding={1} spacing={1} overflow={'auto'}>
                     {inventory.filter(({ name }) => name.toLowerCase().includes(searchQuery.toLowerCase())).map(({ name, quantity, description }) => (
 
                         <Box key={name} bgcolor='gray'>
@@ -167,11 +167,3 @@ const Items = () => {
 
 export default Items
 
-
-// width = "100vw"
-// height = "100vh"
-// display = { 'flex'}
-// justifyContent = { 'center'}
-// flexDirection = { 'column'}
-// alignItems = { 'center'}
-// gap = { 2}
